@@ -1,7 +1,7 @@
 ### About
 Bangcle  is a Android Protector
 
-It use  the  second generation Android Hardening Protection,can load the encrypted dex file from memory dynamically
+It use  the  second generation Android Hardening Protection, load the encrypted dex file from memory dynamically
 
 ### Compatibility
 Support Android Version
@@ -14,7 +14,7 @@ Support Android Version
 - 8.0
 - 8.1
 
-but Bangcle don't support Apk which have rewrite Application currently
+but Bangcle don't support Apk which have rewrite Application currently.
 
 ### How to use
 1. use Apktool decompile the Apk what you need to protect
