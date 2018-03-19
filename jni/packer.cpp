@@ -453,6 +453,7 @@ void mem_loadDex(JNIEnv* env, jobject ctx,const char* szDexPath)
 		  //8.0
 			case 26:
 			case 27:
+			    //reserved
 			    dex_info=NULL;
 			    break;
 			default:
@@ -471,7 +472,7 @@ void mem_loadDex(JNIEnv* env, jobject ctx,const char* szDexPath)
 				 jlong mCookie = static_cast<jlong>(reinterpret_cast<uintptr_t>(dex_files.release()));
 				 env->SetLongField(mini_dex_obj, cookie_field, mCookie);
 			}
-		  else if(g_sdk_int==23){
+		  else if (g_sdk_int==23) {
 				// cookie_field = env->GetFieldID(DexFileClass, "mCookie", "Ljava/lang/Object;");
 				// dex_files.get()->push_back(dex_info);
 				// jlong mCookie = static_cast<jlong>(reinterpret_cast<uintptr_t>(dex_files.release()));
@@ -479,7 +480,7 @@ void mem_loadDex(JNIEnv* env, jobject ctx,const char* szDexPath)
 				// env->SetObjectField(mini_dex_obj, cookie_field, (jobject)mCookie);
 				replace_cookie_M(env,mini_dex_obj,(jlong)dex_info);
 			}
-			else if(g_sdk_int==24 || g_sdk_int==25){
+			else if (g_sdk_int>=24) {
 				//cookie_field = env->GetFieldID(DexFileClass, "mCookie", "Ljava/lang/Object;");
 				replace_cookie_N(env,mini_dex_obj,(jlong)dex_info);
 			}

@@ -132,7 +132,7 @@ void* new_mmap(void* start,size_t length,int prot,int flags,int fd,off_t offset)
 
 int new_munmap(void *start,size_t length)
 {
-  
+
   if(start==g_maindex_base  || length==g_pageSize){
     LOGD("[+]munmap start:%p,length:%d",start,length);
     return 0;
@@ -146,23 +146,3 @@ pid_t new_fork(void)
   return -1;
   //return old_fork();
 }
-
-/*
-D/fengyue ( 6036): [+]Load fake dex begin
-D/fengyue ( 6036): [+]fun my open path:/data/data/com.aispeech.weiyu/files/.jiagu/jiami.dat
-D/fengyue ( 6036): [+]read linkpath:/data/data/com.aispeech.weiyu/files/.jiagu/jiami.dat
-D/fengyue ( 6036): [+]fstat linkPath:/data/data/com.aispeech.weiyu/files/.jiagu/jiami.dat
-D/fengyue ( 6036): [+]mmap linkpath:/data/data/com.aispeech.weiyu/files/.jiagu/jiami.dat,size:3313664
-D/fengyue ( 6036): [+]munmap length:3313664'
-
-
-D/fengyue ( 6036): [+]fun my fork called
-
-
-D/fengyue ( 6036): [+]fun my open path:/data/data/com.aispeech.weiyu/files/.jiagu/jiami.dat
-D/fengyue ( 6036): [+]read linkpath:/data/data/com.aispeech.weiyu/files/.jiagu/jiami.dat
-D/fengyue ( 6036): [+]fstat linkPath:/data/data/com.aispeech.weiyu/files/.jiagu/jiami.dat
-D/fengyue ( 6036): [+]mmap linkpath:/data/data/com.aispeech.weiyu/files/.jiagu/jiami.dat,size:3313664
-D/fengyue ( 6036): [+]munmap length:3313664
-D/fengyue ( 6036): [+]Load fake dex End
-*/
