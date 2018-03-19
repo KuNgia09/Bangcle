@@ -14,7 +14,7 @@ Support Android Version
 - 8.0
 - 8.1
 
-but Bangcle don't support App which have rewrite Application currently
+but Bangcle don't support Apk which have rewrite Application currently
 
 ### How to use
 1. use Apktool decompile the Apk what you need to protect
