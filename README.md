@@ -25,4 +25,4 @@ but Bangcle don't support Apk which have rewrite Application currently.
    add  **android:name="com.storm.fengyue.StubApplication"** under application node
 6. use Apktool rebuild
 
-of course,you can write a script to achieve the above steps
+of course,you can write a script to achieve the above steps automatically
