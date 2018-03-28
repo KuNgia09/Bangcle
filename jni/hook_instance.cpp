@@ -31,11 +31,9 @@ int new_open(const char *pathname, int flags, mode_t mode)
 {
     int result = old_open(pathname, flags, mode);
 
-    if (!strcmp(pathname, g_fake_dex_path))
-    {
+    if (!strcmp(pathname, g_fake_dex_path)) {
         LOGD("[+]new open pathname:%s,result:%d", pathname, result);
-        if (result == -1)
-        {
+        if (result == -1) {
             LOGE("[-]open failed error:%s", strerror(errno));
         }
     }
@@ -55,16 +53,12 @@ int new_fstat(int fd, struct stat *buf)
     int pid = getpid();
     snprintf(fdlinkstr, 128, "/proc/%ld/fd/%d", pid, fd);
 
-    if (readlink(fdlinkstr, linkPath, 256) >= 0)
-    {
-        if (!strcmp(linkPath, g_fake_dex_path))
-        {
+    if (readlink(fdlinkstr, linkPath, 256) >= 0) {
+        if (!strcmp(linkPath, g_fake_dex_path)) {
             buf->st_size = g_dexSize;
             LOGD("[+]fstat linkPath:%s,buf.size:%d", linkPath, buf->st_size);
         }
-    }
-    else
-    {
+    } else   {
         LOGD("[-]fun my fstat readlink error");
     }
     return result;
@@ -80,18 +74,14 @@ ssize_t new_read(int fd, void *buf, size_t count)
     memset(linkPath, 0, 256);
     int pid = getpid();
     snprintf(fdlinkstr, 128, "/proc/%ld/fd/%d", pid, fd);
-    if (readlink(fdlinkstr, linkPath, 256) >= 0)
-    {
+    if (readlink(fdlinkstr, linkPath, 256) >= 0) {
         LOGD("[+]read linkpath:%s", linkPath);
-        if (!strcmp(g_fake_dex_path, linkPath))
-        {
+        if (!strcmp(g_fake_dex_path, linkPath)) {
             LOGD("[+]fun my read memcpy magic");
             memcpy(buf, kDexMagic, 4);
             return 4;
         }
-    }
-    else
-    {
+    } else   {
         LOGD("[-]fun my read readlink error");
     }
     return old_read(fd, buf, count);
@@ -107,18 +97,14 @@ ssize_t new_read_chk(int fd, void *buf, size_t nbytes, size_t buflen)
     memset(linkPath, 0, 256);
     int pid = getpid();
     snprintf(fdlinkstr, 128, "/proc/%ld/fd/%d", pid, fd);
-    if (readlink(fdlinkstr, linkPath, 256) >= 0)
-    {
+    if (readlink(fdlinkstr, linkPath, 256) >= 0) {
         LOGD("[+]read_chk linkpath:%s", linkPath);
-        if (!strcmp(g_fake_dex_path, linkPath))
-        {
+        if (!strcmp(g_fake_dex_path, linkPath)) {
             LOGD("[+]fun my read_chk memcpy magic");
             memcpy(buf, kDexMagic, 4);
             return 4;
         }
-    }
-    else
-    {
+    } else   {
         LOGD("[-]fun my read_chk readlink error");
     }
     return old_read_chk(fd, buf, nbytes, buflen);
@@ -134,14 +120,12 @@ void *new_mmap(void *start, size_t length, int prot, int flags, int fd, off_t of
     memset(linkPath, 0, 256);
     int pid = getpid();
     snprintf(fdlinkstr, 128, "/proc/%ld/fd/%d", pid, fd);
-    if (readlink(fdlinkstr, linkPath, 256) < 0)
-    {
+    if (readlink(fdlinkstr, linkPath, 256) < 0) {
         LOGD("[-]fun my mmap readlink error");
         return old_mmap(start, length, prot, flags, fd, offset);
     }
 
-    if (strcmp(linkPath, g_fake_dex_path) == 0)
-    {
+    if (strcmp(linkPath, g_fake_dex_path) == 0) {
         LOGD("[+]mmap linkpath:%s,size:%d", linkPath, length);
         return g_maindex_base;
     }
@@ -151,8 +135,7 @@ void *new_mmap(void *start, size_t length, int prot, int flags, int fd, off_t of
 
 int new_munmap(void *start, size_t length)
 {
-    if ((start == g_maindex_base) || (length == g_pageSize))
-    {
+    if ((start == g_maindex_base) || (length == g_pageSize)) {
         LOGD("[+]munmap start:%p,length:%d", start, length);
         return 0;
     }

@@ -16,8 +16,7 @@
 #include "elfGotHook/logger.h"
 
 
-unsigned int
-search_symbol_fromelf(char *lib_path, unsigned int lib_base_addr, char *target)
+unsigned int search_symbol_fromelf(char *lib_path, unsigned int lib_base_addr, char *target)
 {
     if (!lib_base_addr) {
         return 0;
@@ -130,8 +129,7 @@ label:
 } // search_symbol_fromelf
 
 
-void *
-get_addr_symbol(char *module_name, char *target_symbol)
+void *get_addr_symbol(char *module_name, char *target_symbol)
 {
     void *module_base = get_module_base(-1, module_name);
 
@@ -148,8 +146,7 @@ get_addr_symbol(char *module_name, char *target_symbol)
 }
 
 
-int
-extract_file(JNIEnv *env, jobject ctx, const char *dir, const char *szDexPath, const char *fileName)
+int extract_file(JNIEnv *env, jobject ctx, const char *dir, const char *szDexPath, const char *fileName)
 {
     if (access(dir, F_OK) != 0) {
         mkdir(dir, 505);
@@ -192,8 +189,7 @@ extract_file(JNIEnv *env, jobject ctx, const char *dir, const char *szDexPath, c
 } // extract_file
 
 
-void *
-get_module_base(pid_t pid, const char *module_name)
+void *get_module_base(pid_t pid, const char *module_name)
 {
     FILE *fp;
     long addr = 0;

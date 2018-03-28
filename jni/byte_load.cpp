@@ -21,8 +21,7 @@ using namespace std;
 // C:\Users\Administrator\.atom\packages\atom-beautify\default.cfg
 
 //
-void *
-mem_loadDex_byte19(void *arthandler, const char *base, size_t size)
+void *mem_loadDex_byte19(void *arthandler, const char *base, size_t size)
 {
     std::string                 location = "";
     std::string                 err_msg;
@@ -114,8 +113,7 @@ void *mem_loadDex_byte22(void *artHandle, const char *base, size_t size)
  * @param base      [description]
  * @param size      [description]
  */
-void *
-mem_loadDex_byte23(void *artHandle, const char *base, size_t size)
+void *mem_loadDex_byte23(void *artHandle, const char *base, size_t size)
 {
     std::string location = "";
     std::string err_msg;
@@ -147,8 +145,7 @@ mem_loadDex_byte23(void *artHandle, const char *base, size_t size)
 }
 
 
-void *
-mem_loadDex_byte24(void *artHandle, const char *base, size_t size)
+void *mem_loadDex_byte24(void *artHandle, const char *base, size_t size)
 {
     std::string location = "";
     std::string err_msg;
