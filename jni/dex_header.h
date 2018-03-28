@@ -6,12 +6,13 @@
 static const size_t kSha1DigestSize = 20;
 
 // Raw header_item.
-struct Header {
+struct Header
+{
     uint8_t  magic_[8];
-    uint32_t checksum_; // See also location_checksum_
+    uint32_t checksum_;        // See also location_checksum_
     uint8_t  signature_[kSha1DigestSize];
-    uint32_t file_size_;   // size of entire file
-    uint32_t header_size_; // offset to start of next section
+    uint32_t file_size_;       // size of entire file
+    uint32_t header_size_;     // offset to start of next section
     uint32_t endian_tag_;
     uint32_t link_size_;       // unused
     uint32_t link_off_;        // unused

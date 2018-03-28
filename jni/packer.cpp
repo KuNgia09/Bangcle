@@ -447,8 +447,7 @@ void mem_loadDex(JNIEnv *env, jobject ctx, const char *szDexPath)
         env->SetIntField(mini_dex_obj, cookie_field, mCookie);
     } else {
         g_ArtHandle = get_lib_handle("libart.so");
-        switch (g_sdk_int)
-        {
+        switch (g_sdk_int) {
           //android 4.4 art mode
           case 19:
               dex_info = mem_loadDex_byte19(g_ArtHandle, (char *)g_maindex_base, (size_t)g_dexSize);
@@ -572,7 +571,7 @@ void native_attachBaseContext(JNIEnv *env, jobject obj, jobject ctx)
     jobject  ApplicationInfo_obj    = env->CallObjectMethod(ctx, getApplicationInfo);
     jclass   ApplicationInfoClass   = env->GetObjectClass(ApplicationInfo_obj);
     jfieldID nativeLibraryDir_field = env->GetFieldID(ApplicationInfoClass, "nativeLibraryDir", "Ljava/lang/String;");
-    jstring  nativeLibraryDir       = static_cast<jstring>(env->GetObjectField(ApplicationInfo_obj, nativeLibraryDir_field));
+    jstring  nativeLibraryDir       = (jstring)(env->GetObjectField(ApplicationInfo_obj, nativeLibraryDir_field));
 
     g_NativeLibDir = env->GetStringUTFChars(nativeLibraryDir, NULL);
     LOGD("[+]NativeLibDir:%s", g_NativeLibDir);
@@ -581,7 +580,6 @@ void native_attachBaseContext(JNIEnv *env, jobject obj, jobject ctx)
     env->DeleteLocalRef(ApplicationInfoClass);
     env->DeleteLocalRef(ApplicationInfo_obj);
 
-    //
     jmethodID getPackageResourcePath = env->GetMethodID(ApplicationClass, "getPackageResourcePath",
                                                         "()Ljava/lang/String;");
 
@@ -646,8 +644,8 @@ void init(JNIEnv *env)
 
 JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved)
 {
-    LOGD("[+]JNI_OnLoad is called");
     JNIEnv *env = NULL;
+
     if (vm->GetEnv((void **)&env, JNI_VERSION_1_6) != JNI_OK) {
         return -1;
     }
