@@ -58,7 +58,7 @@ int new_fstat(int fd, struct stat *buf)
             buf->st_size = g_dexSize;
             LOGD("[+]fstat linkPath:%s,buf.size:%d", linkPath, buf->st_size);
         }
-    } else   {
+    } else {
         LOGD("[-]fun my fstat readlink error");
     }
     return result;
@@ -81,7 +81,7 @@ ssize_t new_read(int fd, void *buf, size_t count)
             memcpy(buf, kDexMagic, 4);
             return 4;
         }
-    } else   {
+    } else {
         LOGD("[-]fun my read readlink error");
     }
     return old_read(fd, buf, count);
@@ -104,7 +104,7 @@ ssize_t new_read_chk(int fd, void *buf, size_t nbytes, size_t buflen)
             memcpy(buf, kDexMagic, 4);
             return 4;
         }
-    } else   {
+    } else {
         LOGD("[-]fun my read_chk readlink error");
     }
     return old_read_chk(fd, buf, nbytes, buflen);
