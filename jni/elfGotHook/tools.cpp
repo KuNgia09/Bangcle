@@ -1,3 +1,4 @@
+#include <string.h>
 #include "tools.h"
 
 void *ElfHooker::get_module_base(pid_t pid, const char *module)
@@ -15,8 +16,8 @@ void *ElfHooker::get_module_base(pid_t pid, const char *module)
 
     unsigned long module_start;
     unsigned long module_end;
-    char          so_name[SO_NAME_LEN];
-    FILE          *mapsFile = fopen(buffer, "r");
+    char so_name[SO_NAME_LEN];
+    FILE *mapsFile = fopen(buffer, "r");
     if (NULL != mapsFile)
     {
         while (fgets(buffer, 1024, mapsFile))
@@ -39,16 +40,15 @@ void *ElfHooker::get_module_base(pid_t pid, const char *module)
     return NULL;
 }
 
-
 uint32_t ElfHooker::elf_hash(const char *symbol)
 {
     const uint8_t *name = reinterpret_cast<const uint8_t *>(symbol);
-    uint32_t      h = 0, g;
+    uint32_t h = 0, g;
 
     while (*name)
     {
-        h  = (h << 4) + *name++;
-        g  = h & 0xf0000000;
+        h = (h << 4) + *name++;
+        g = h & 0xf0000000;
         h ^= g;
         h ^= g >> 24;
     }
@@ -56,10 +56,9 @@ uint32_t ElfHooker::elf_hash(const char *symbol)
     return h;
 }
 
-
 uint32_t ElfHooker::gnu_hash(const char *symbol)
 {
-    uint32_t      h     = 5381;
+    uint32_t h = 5381;
     const uint8_t *name = reinterpret_cast<const uint8_t *>(symbol);
 
     while (0 != *name)
@@ -68,7 +67,6 @@ uint32_t ElfHooker::gnu_hash(const char *symbol)
     }
     return h;
 }
-
 
 void ElfHooker::clear_cache(void *addr, size_t len)
 {
