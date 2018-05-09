@@ -34,14 +34,14 @@ public class Main {
 	public static void main(String[] args) {
 		System.out.println("----------Bangcle Automation----------------");
 		System.out.println(System.getProperty("user.dir"));
-//		String cmd = args[0];
-//		if (!"b".equals(cmd)) {
-//			System.out.println("usage:java -jar Bangcle.jar b apkName");
-//			return;
-//		}
-//		
-//		String apkName = args[1];
-		String apkName="msgnow-release.apk";
+		String cmd = args[0];
+		if (!"b".equals(cmd)) {
+			System.out.println("usage:java -jar Bangcle.jar b apkName");
+			return;
+		}
+		
+		String apkName = args[1];
+//		String apkName="msgnow-release.apk";
 //		String apkName="unpack_permmgr.apk";
 //		String apkName="com.aispeech.weiyu_2.apk";
 		String apkPath=getWorkPath()+"\\"+apkName;
