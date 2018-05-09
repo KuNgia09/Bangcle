@@ -16,13 +16,13 @@ Support Android Version
 - 8.1
 
 ### How to use
-int **bangcle_tool** directory  
+in **bangcle_tool** directory  
 run this command to protect app
 
 ```java
-java -jar Bangcle..jar b AppName
+java -jar Bangcle.jar b AppName
 ```
 
-the encrypted App is located at **output** folder
+the encrypted Apk is located at **output** folder
 
 
