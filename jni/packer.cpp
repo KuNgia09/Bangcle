@@ -22,7 +22,12 @@
 #include "hook_instance.h"
 #include "elfGotHook/tools.h"
 #include "elfGotHook/elf_reader.h"
-#include "openssl/openssl/aes.h"
+// #include "openssl/openssl/aes.h"
+
+#define CBC 1
+#define CTR 1
+#define ECB 1
+#include "aes.hpp"
 
 #define PAGE_MASK 0xfffff000
 #define PAGE_SIZE 4096
@@ -31,8 +36,14 @@
 #define PAGE_END(x) PAGE_START((x) + (PAGE_SIZE - 1))
 
 using namespace std;
-
+#if defined(__aarch64__)
+#define LIB_ART_PATH "/system/lib64/libart.so"
+#elif defined(__arm__)
 #define LIB_ART_PATH "/system/lib/libart.so"
+#else
+#define LIB_ART_PATH "/system/lib/libart.so"
+#endif
+
 #define REGREX ".*/libart\\.so$"
 #define JIAMI_MAGIC "jiami.dat"
 #define PACKER_MAGIC ".jiagu"
@@ -193,7 +204,7 @@ jint mem_loadDex_dvm(JNIEnv *env, char *szPath)
     memcpy(arr + 16, (char *)g_decrypt_base, g_dex_size);
     munmap((char *)g_decrypt_base, g_dex_size);
 
-    u4 args[] = {(u4)ao};
+    u4 args[] = {(u4)(long)ao};
     union JValue pResult;
     jint result;
     if (openDexFile != NULL)
@@ -432,36 +443,141 @@ void write_file(const char *path, void *buffer, int size)
     }
 }
 
-//************************************
-// Method:    aes_encrypt_cbc
-// Brief:     使用aes/cbc/pkcs5padding加密
-// Access:    public
-// Returns:   char* 返回加密后buffer
-// Qualifier:
-// Parameter: char * in 待加密数据buffer
-// Parameter: int inLen 待加密数据len
-// Parameter: int * outLen 返回加密数据len
-//************************************
-char *aes_encrypt_cbc(char *in, int inLen, int *outLen)
-{
-    char *InputData = NULL;
-    char *EncryptData = NULL;
+// char *aes_encrypt_cbc(char *in, int inLen, int *outLen)
+// {
+//     char *inputData = NULL;
+//     char *out;
+//     //# define AES_BLOCK_SIZE 16
+//     unsigned char Key[AES_BLOCK_SIZE + 1];
+//     unsigned char ivec[AES_BLOCK_SIZE];
+//     AES_KEY AesKey;
 
-    //# define AES_BLOCK_SIZE 16
+//     //设置密钥key
+//     memset(Key, 0x00, sizeof(Key));
+//     memcpy(Key, AES_KEYCODE, AES_BLOCK_SIZE);
+
+//     int nBei = inLen / AES_BLOCK_SIZE + 1;
+//     int nTotal = nBei * AES_BLOCK_SIZE;
+
+//     *outLen = nTotal;
+//     //使用PKCS7Padding
+//     inputData = (char *)calloc(nTotal + 1, 1);
+//     int nNumber;
+//     if (inLen % 16)
+//     {
+//         nNumber = nTotal - inLen;
+//     }
+//     else
+//     {
+//         nNumber = 16;
+//     }
+
+//     memset(inputData, nNumber, nTotal);
+//     memcpy(inputData, in, inLen);
+
+//     out = (char *)calloc(nTotal + 1, sizeof(char));
+//     if (out == NULL)
+//     {
+//         LOGE("[-]calloc out buffer error");
+//         exit(-1);
+//     }
+
+//     //初始化key
+//     memset(&AesKey, 0x00, sizeof(AES_KEY));
+//     if (AES_set_encrypt_key(Key, 128, &AesKey) < 0)
+//     {
+//         //fprintf(stderr, "Unable to set encryption key in AES...\n");
+//         LOGE("AES_set_encrypt_key error");
+//         exit(-1);
+//     }
+//     memcpy(ivec, AES_IV, 16);
+
+//     AES_cbc_encrypt((unsigned char *)inputData, (unsigned char *)out,
+//                     nTotal, &AesKey, ivec, AES_ENCRYPT);
+
+//     if (inputData)
+//     {
+//         free(inputData);
+//     }
+//     return out;
+// }
+
+// //************************************
+// // Method:    aes_decrypt_cbc
+// // Brief:     使用aes/cbc/pkcs5padding解密
+// // Access:    public
+// // Returns:   char*   返回解密buffer
+// // Qualifier:
+// // Parameter: char * in  待解密buffer
+// // Parameter: int inLen  待解密buffer len
+// // Parameter: int * outLen 返回解密buffer的数据长度
+// char *aes_decrypt_cbc(char *in, int inLen, int *outLen)
+// {
+//     char *out;
+//     //# define AES_BLOCK_SIZE 16
+//     unsigned char Key[AES_BLOCK_SIZE + 1];
+//     unsigned char ivec[AES_BLOCK_SIZE];
+//     AES_KEY AesKey;
+
+//     //设置密钥key
+//     memset(Key, 0x00, sizeof(Key));
+//     memcpy(Key, AES_KEYCODE, AES_BLOCK_SIZE);
+//     memset(&AesKey, 0x00, sizeof(AES_KEY));
+//     if (AES_set_decrypt_key(Key, 128, &AesKey) < 0)
+//     { //设置解密密钥
+//         fprintf(stderr, "Unable to set encryption key in AES...\n");
+//         exit(-1);
+//     }
+//     memcpy(ivec, AES_IV, 16);
+
+//     out = (char *)calloc(inLen + 1, sizeof(char));
+//     if (out == NULL)
+//     {
+//         LOGE("[-]calloc decrypt buffer error");
+//         exit(-1);
+//     }
+//     //解密
+//     AES_cbc_encrypt((unsigned char *)in, (unsigned char *)out,
+//                     inLen, &AesKey, ivec, AES_DECRYPT);
+
+//     //去掉padding字符串
+//     //获取padding后的明文长度
+//     int padLen = inLen;
+//     //获取pad的值
+//     int padValue = out[padLen - 1];
+//     if ((padValue == 0) || (padValue > AES_BLOCK_SIZE))
+//     {
+//         //错误的padding，解密失败
+//         LOGE("[-]decrypt failed");
+//         return 0;
+//     }
+//     *outLen = padLen - padValue;
+//     out[padLen - padValue] = '\0';
+//     return out;
+// }
+
+char *tiny_aes_encrypt_cbc(char *in, int inLen, int *outLen)
+{
+
+#define AES_BLOCK_SIZE 16
+    char *inputData = NULL;
     unsigned char Key[AES_BLOCK_SIZE + 1];
     unsigned char ivec[AES_BLOCK_SIZE];
-    AES_KEY AesKey;
 
     //设置密钥key
     memset(Key, 0x00, sizeof(Key));
     memcpy(Key, AES_KEYCODE, AES_BLOCK_SIZE);
 
+    //设置ivec
+    memcpy(ivec, AES_IV, 16);
+
     int nBei = inLen / AES_BLOCK_SIZE + 1;
     int nTotal = nBei * AES_BLOCK_SIZE;
 
     *outLen = nTotal;
-    //使用PKCS7Padding
-    InputData = (char *)calloc(nTotal + 1, 1);
+
+    //使用PKCS5Padding
+    inputData = (char *)calloc(nTotal + 1, 1);
     int nNumber;
     if (inLen % 16)
     {
@@ -471,93 +587,57 @@ char *aes_encrypt_cbc(char *in, int inLen, int *outLen)
     {
         nNumber = 16;
     }
+    memset(inputData, nNumber, nTotal);
+    memcpy(inputData, in, inLen);
 
-    memset(InputData, nNumber, nTotal);
-    memcpy(InputData, in, inLen);
+    struct AES_ctx ctx;
+    AES_init_ctx_iv(&ctx, Key, ivec);
+    AES_CBC_encrypt_buffer(&ctx, (uint8_t *)inputData, (uint32_t)nTotal);
 
-    EncryptData = (char *)calloc(nTotal + 1, sizeof(char));
-    if (EncryptData == NULL)
-    {
-        LOGE("[-]calloc EncryptData error");
-        exit(-1);
-    }
-
-    //初始化key
-    memset(&AesKey, 0x00, sizeof(AES_KEY));
-    if (AES_set_encrypt_key(Key, 128, &AesKey) < 0)
-    {
-        //fprintf(stderr, "Unable to set encryption key in AES...\n");
-        LOGE("AES_set_encrypt_key error");
-        exit(-1);
-    }
-    memcpy(ivec, AES_IV, 16);
-
-    AES_cbc_encrypt((unsigned char *)InputData, (unsigned char *)EncryptData,
-                    nTotal, &AesKey, ivec, AES_ENCRYPT);
-
-    if (InputData)
-    {
-        free(InputData);
-    }
-    return EncryptData;
+    return inputData;
 }
 
-//************************************
-// Method:    aes_decrypt_cbc
-// Brief:     使用aes/cbc/pkcs5padding解密
-// Access:    public
-// Returns:   char*   返回解密buffer
-// Qualifier:
-// Parameter: char * in  待解密buffer
-// Parameter: int inLen  待解密buffer len
-// Parameter: int * outLen 返回解密buffer的数据长度
-char *aes_decrypt_cbc(char *in, int inLen, int *outLen)
+char *tiny_aes_decrypt_cbc(char *in, int inLen, int *outLen)
 {
-    char *InputData = NULL;
-    char *DecryptData = NULL;
-    //# define AES_BLOCK_SIZE 16
+
+#define AES_BLOCK_SIZE 16
     unsigned char Key[AES_BLOCK_SIZE + 1];
     unsigned char ivec[AES_BLOCK_SIZE];
-    AES_KEY AesKey;
 
     //设置密钥key
     memset(Key, 0x00, sizeof(Key));
-    memcpy(Key, AES_KEYCODE, AES_BLOCK_SIZE);
-    memset(&AesKey, 0x00, sizeof(AES_KEY));
-    if (AES_set_decrypt_key(Key, 128, &AesKey) < 0)
-    { //设置解密密钥
-        fprintf(stderr, "Unable to set encryption key in AES...\n");
-        exit(-1);
-    }
+    memcpy(Key, AES_KEYCODE, 16);
+
     memcpy(ivec, AES_IV, 16);
 
-    char *out = (char *)calloc(inLen + 1, sizeof(char));
-    if (out == NULL)
-    {
-        LOGE("[-]calloc EncryptData error");
-        exit(-1);
-    }
-    //解密
-    AES_ecb_encrypt((unsigned char *)in, (unsigned char *)out,
-                    &AesKey, AES_DECRYPT);
-    AES_cbc_encrypt((unsigned char *)in, (unsigned char *)out,
-                    inLen, &AesKey, ivec, AES_DECRYPT);
+    struct AES_ctx ctx;
+    AES_init_ctx_iv(&ctx, Key, ivec);
+
+    AES_CBC_decrypt_buffer(&ctx, (uint8_t *)in, (uint32_t)inLen);
 
     //去掉padding字符串
     //获取padding后的明文长度
     int padLen = inLen;
     //获取pad的值
-    int padValue = out[padLen - 1];
-    //与opensslEVP_DecryptFinal_ex函数的if (n == 0 || n > (int)b) {判断一致
+    int padValue = in[padLen - 1];
+    LOGD("[+]padValue:%d", padValue);
+
     if ((padValue == 0) || (padValue > AES_BLOCK_SIZE))
     {
         //错误的padding，解密失败
         LOGE("[-]decrypt failed");
         return 0;
     }
-    *outLen = padLen - padValue;
-    out[padLen - padValue] = '\0';
-    return out;
+    int realLen = padLen - padValue;
+    *outLen = realLen;
+    in[padLen - padValue] = '\0';
+    // char saveFile[0x100] = {0};
+    // sprintf(saveFile, "%s/dump.dex", g_jiagu_dir);
+    // FILE *file = fopen(saveFile, "wb");
+    // fwrite(in, 1, realLen, file);
+    // fclose(file);
+    // LOGD("[+]dump.dex saved at %s,size:%d", saveFile, realLen);
+    return in;
 }
 
 char *parse_file(const char *encrypt_path, int &encrypt_size)
@@ -627,16 +707,17 @@ void mem_loadDex(JNIEnv *env, jobject ctx, const char *dex_path)
     //LOGD("[+]ANONYMOUS mmap addr:%p", g_decrypt_base);
     char decrypt_path[256] = {0};
     sprintf((char *)decrypt_path, "%s/decrypt.dat", g_jiagu_dir);
-    char *decrypt_buffer = aes_decrypt_cbc(encrypt_buffer, encrypt_size, &g_dex_size);
+    //char *decrypt_buffer = aes_decrypt_cbc(encrypt_buffer, encrypt_size, &g_dex_size);
+    char *decrypt_buffer = tiny_aes_decrypt_cbc(encrypt_buffer, encrypt_size, &g_dex_size);
     if (!decrypt_buffer)
     {
         LOGE("[-]aes_decrypt_cbc decrypt dex failed");
         exit(-1);
     }
+
     memcpy(g_decrypt_base, decrypt_buffer, g_dex_size);
     g_page_size = PAGE_END(g_dex_size);
     free(decrypt_buffer);
-    free(encrypt_buffer);
 
     LOGD("[+]After decrypt dex magic:0x%x,size:%d,page_size:%d", *(int *)g_decrypt_base, g_dex_size, g_page_size);
 
@@ -656,8 +737,8 @@ void mem_loadDex(JNIEnv *env, jobject ctx, const char *dex_path)
     }
     else
     {
-        g_ArtHandle = get_lib_handle("libart.so");
-        LOGD("[+]g_ArtHandle:%08x", g_ArtHandle);
+        g_ArtHandle = get_lib_handle(LIB_ART_PATH);
+        LOGD("[+]g_ArtHandle:0x%x", g_ArtHandle);
         switch (g_sdk_int)
         {
         //android 4.4 art mode
@@ -698,10 +779,11 @@ void mem_loadDex(JNIEnv *env, jobject ctx, const char *dex_path)
         LOGD("[+]sdk_int :%d,c_dex_cookie:%x", g_sdk_int, c_dex_cookie);
         if (c_dex_cookie)
         {
-
             if (g_sdk_int == 19)
             {
                 cookie_field = env->GetFieldID(DexFileClass, "mCookie", "I");
+                LOGD("[+]sdk_int:%d,cookie_field:%x", cookie_field);
+                env->SetIntField(mini_dex_obj, cookie_field, (int)(long)c_dex_cookie);
             }
             else if ((g_sdk_int == 21) || (g_sdk_int == 22))
             {
@@ -812,6 +894,13 @@ void mem_loadDex(JNIEnv *env, jobject ctx, const char *dex_path)
 
 void native_attachBaseContext(JNIEnv *env, jobject thiz, jobject ctx)
 {
+#if defined(__arm__)
+    LOGD("[+]Running arm libdexload");
+#elif defined(__aarch64__)
+    LOGD("[+]Running aarch64 libdexload");
+
+#endif
+
     jclass ApplicationClass = env->GetObjectClass(ctx);
     jmethodID getFilesDir = env->GetMethodID(ApplicationClass, "getFilesDir", "()Ljava/io/File;");
     jobject File_obj = env->CallObjectMethod(ctx, getFilesDir);

@@ -7,9 +7,10 @@
 #include "def.h"
 #include "logger.h"
 
-class ElfReader {
-public:
-    ElfReader(const char* module, void *start);
+class ElfReader
+{
+  public:
+    ElfReader(const char *module, void *start);
     int parse();
     int hook(const char *func_name, void *new_func, void **old_func);
     void dumpElfHeader();
@@ -17,25 +18,25 @@ public:
     void dumpDynamicSegment();
     void dumpDynamicRel();
 
-private:
+  private:
     int verifyElfHeader();
     int elfTargetMachine();
     ElfW(Addr) getSegmentBaseAddress();
-    ElfW(Phdr)* findSegmentByType(ElfW(Word) type);
-    ElfW(Phdr)* findSegmentByAddress(void *addr);
+    ElfW(Phdr) * findSegmentByType(ElfW(Word) type);
+    ElfW(Phdr) * findSegmentByAddress(void *addr);
     int parseDynamicSegment();
-    int findSymbolByName(const char *symbol, ElfW(Sym) **sym, uint32_t *symidx);
-    int elfLookup(const char *symbol, ElfW(Sym) **sym, uint32_t *symidx);
-    int gnuLookup(const char *symbol, ElfW(Sym) **sym, uint32_t *symidx);
+    int findSymbolByName(const char *symbol, ElfW(Sym) * *sym, uint32_t *symidx);
+    int elfLookup(const char *symbol, ElfW(Sym) * *sym, uint32_t *symidx);
+    int gnuLookup(const char *symbol, ElfW(Sym) * *sym, uint32_t *symidx);
     int hookInternally(void *addr, void *new_func, void **old_func);
 
-private:
-    const char* moduleName;
-    ElfW(Addr) start;
+  private:
+    const char *moduleName; //要hook的模块名
+    ElfW(Addr) start;       //ELF32_ADDR
     ElfW(Addr) bias;
-    ElfW(Ehdr) *ehdr;
+    ElfW(Ehdr) * ehdr;
     ElfW(Half) phdrNum;
-    ElfW(Phdr) *phdr;
+    ElfW(Phdr) * phdr;
 
     const char *strTable = NULL;
     ElfW(Sym) *symTable = NULL;
@@ -63,8 +64,7 @@ private:
     uint32_t gnuShift2;
     uint32_t *gnuBucket;
     uint32_t *gnuChain;
-    ElfW(Addr) *gnuBloomFilter;
+    ElfW(Addr) * gnuBloomFilter;
 };
-
 
 #endif //INJECTDEMO_ELF_READER_H

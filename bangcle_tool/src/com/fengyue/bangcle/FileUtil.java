@@ -82,7 +82,7 @@ public class FileUtil {
 	
 	
 	  /**
-     * 8192是经验值，有经验的程序员buffer都是8192
+     * 读取文件内容到数组
      *
      * @param filePath
      * @return

@@ -44,7 +44,7 @@ public class Main {
 //		String apkName="msgnow-release.apk";
 //		String apkName="unpack_permmgr.apk";
 //		String apkName="com.aispeech.weiyu_2.apk";
-		String apkPath=getWorkPath()+"\\"+apkName;
+		String apkPath=getWorkPath()+File.separator+apkName;
 		
 		
 		// 反编译目录
@@ -56,12 +56,12 @@ public class Main {
 		
 		
 		// 删除反编译目录
-		File outputFolder = new File(workPath + "\\output");
+		File outputFolder = new File(workPath + File.separator+"output");
 		if(!outputFolder.exists()){
 			outputFolder.mkdir();
 			System.out.println("创建生成目录:"+outputFolder.getAbsolutePath());
 		}
-		File decompiledFile = new File(outputFolder.getAbsolutePath() +"\\"+ decompiledDirName);
+		File decompiledFile = new File(outputFolder.getAbsolutePath() +File.separator+ decompiledDirName);
 		String decompiledPath=decompiledFile.getAbsolutePath();
 		if (decompiledFile.exists()) {
 			FileUtil.delete(decompiledFile);
@@ -95,20 +95,8 @@ public class Main {
 			
 		}
 		
-		//check arm64-v8a
-		String a64_path=decompiledPath+File.separator+"lib"+File.separator+"arm64-v8a";
-		File a64_file=new File(a64_path);
-		//delete arm64-v8a directory
-		if(a64_file.exists()){
-			System.out.println("警告："+apkName+"存在64位的so，Bangcle将删除arm64-v8a文件夹");
-			FileUtil.delete(a64_file);
-		}
-		
-		
-		
-		String rawdex=decompiledPath+"\\classes.dex";
-		//extract dex
-		//ZipUtil.extract(apkName, "classes.dex",tmp);
+
+		String rawdex=decompiledPath+File.separator+"classes.dex";
 		
 		//encrypt raw dex
 		byte[] data=FileUtil.getFileByte(rawdex);
@@ -122,33 +110,12 @@ public class Main {
 		
 		try {
 			//将libdexload.so 复制到 assets目录下
-			FileUtil.copyFile(toolsPath+File.separator+soName+".so",assetDir+File.separator+soName+"_arm.so" );
+			FileUtil.copyFile(toolsPath+File.separator+soName+"_arm.so",assetDir+File.separator+soName+"_arm.so" );
+			FileUtil.copyFile(toolsPath+File.separator+soName+"_a64.so",assetDir+File.separator+soName+"_a64.so" );
 		} catch (IOException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
-		
-		/*
-		String dexload=libPath+File.separator+"libdexload.so";
-		String elf_path=decompiledPath+File.separator+"lib";
-		String arch_path=elf_path+File.separator+"armeabi";
-		File elf_file=new File(elf_path);
-		if(!elf_file.exists()){
-			elf_file.mkdir();		
-			File arch_file=new File(arch_path);
-			if(!arch_file.exists()){
-				arch_file.mkdir();
-			}
-		}
-		//copy libdexload.so
-		try {
-			FileUtil.copyFile(dexload, arch_path+File.separator+"libdexload.so");
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		*/
-		
 
 		try {
 			FileUtil.copyDir(toolsPath+File.separator+"smali", decompiledPath+File.separator+"smali");

@@ -11,7 +11,7 @@ LOCAL_SRC_FILES := packer.cpp  \
 									 utils.cpp
 LOCAL_SRC_FILES += elfGotHook/elf_reader.cpp   \
 									 elfGotHook/tools.cpp
-
+LOCAL_SRC_FILES +=aes.c
 # LOCAL_SRC_FILES +=  xhook/xhook.c \
 #                     xhook/xh_core.c \
 #                     xhook/xh_elf.c \
@@ -25,6 +25,6 @@ LOCAL_CFLAGS := -Wall
 # LOCAL_CFLAGS +=-fpermissive
 LOCAL_CFLAGS += -DNO_WINDOWS_BRAINDEATH #-Werror-pointer-arith  #-fvisibility=hidden
 LOCAL_LDLIBS :=-llog -landroid
-LOCAL_LDLIBS +=$(LOCAL_PATH)/openssl/libcrypto.a
-LOCAL_LDLIBS +=$(LOCAL_PATH)/openssl/libssl.a
+# LOCAL_LDLIBS +=$(LOCAL_PATH)/openssl/libcrypto.a
+# LOCAL_LDLIBS +=$(LOCAL_PATH)/openssl/libssl.a
 include $(BUILD_SHARED_LIBRARY)

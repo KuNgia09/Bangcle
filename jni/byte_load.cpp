@@ -37,10 +37,13 @@ void *mem_loadDex_byte19(void *arthandler, const char *base, size_t size)
     std::string err_msg;
     org1_artDexFileOpenMemory19 func = (org1_artDexFileOpenMemory19)dlsym(arthandler,
                                                                           "_ZN3art7DexFile10OpenMemoryEPKhjRKSsjPNS_6MemMapE");
+                                                                           
     if (!func)
     {
+        LOGE("[-]dlsym open Memory failed:%s",dlerror());
         return NULL;
     }
+    LOGD("[+]call openMemory function");
     const Header *dex_header = reinterpret_cast<const Header *>(base);
     void *value = func((const unsigned char *)base,
                        size,
@@ -49,7 +52,7 @@ void *mem_loadDex_byte19(void *arthandler, const char *base, size_t size)
                        NULL);
     if (!value)
     {
-        LOGE("[-]sdk_int:%d dlsym openMemory failed:%s", g_sdk_int, dlerror());
+        LOGE("[-]sdk_int:%d call openMemory failed:%s", g_sdk_int, dlerror());
         return NULL;
     }
     return value;

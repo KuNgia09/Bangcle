@@ -1,11 +1,13 @@
-### About
+# About
+
 Bangcle  is a Android Protector
 
 It use  the  second generation Android Hardening Protection, load the encrypted dex file from memory dynamically
 
-### Compatibility
+## Compatibility
 
-Support Android Version
+Support Android Version  
+
 - 4.4
 - 5.0
 - 5.1
@@ -16,13 +18,14 @@ Support Android Version
 - 8.1
 
 ### How to use
-in **bangcle_tool** directory  
-run this command to protect app
+
+Enter **bangcle_tool** directory    
+Run this command to protect you App
 
 ```java
 java -jar Bangcle.jar b AppName
 ```
 
-the encrypted Apk is located at **output** folder
+The encrypted Apk is located at **output** folder
 
 
