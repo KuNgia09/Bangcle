@@ -874,14 +874,14 @@ int ElfReader::gnuLookup(const char *symbol, ElfW(Sym) * *sym, uint32_t *symidx)
     *symidx = 0;
     if ((1 & (bloom_word >> (hash % bloom_mask_bits)) & (bloom_word >> (h2 % bloom_mask_bits))) == 0)
     {
-        LOGE("gnuLookup: not found symbol %s in %s", symbol, this->moduleName);
+        // LOGE("gnuLookup: not found symbol %s in %s", symbol, this->moduleName);
         return -1;
     }
 
     uint32_t n = this->gnuBucket[hash % this->gnuNBucket];
     if (n == 0)
     {
-        LOGE("gnuLookup: not found symbol %s in %s", symbol, this->moduleName);
+        // LOGE("gnuLookup: not found symbol %s in %s", symbol, this->moduleName);
         return -1;
     }
 
@@ -896,7 +896,7 @@ int ElfReader::gnuLookup(const char *symbol, ElfW(Sym) * *sym, uint32_t *symidx)
         }
     } while ((this->gnuChain[n++] & 1) == 0);
 
-    LOGE("gnuLookup: not found symbol %s in %s", symbol, this->moduleName);
+    // LOGE("gnuLookup: not found symbol %s in %s", symbol, this->moduleName);
     return -1;
 }
 
@@ -916,7 +916,7 @@ int ElfReader::hookInternally(void *addr, void *new_func, void **old_func)
     }
 
     int prot = PFLAGS_TO_PROT(phdr->p_flags);
-    LOGD("prot p_flags = %d", prot);
+    // LOGD("prot p_flags = %d", prot);
     prot &= ~PROT_EXEC;
     prot |= PROT_WRITE;
     ElfW(Addr) target = reinterpret_cast<ElfW(Addr)>(addr);
@@ -931,7 +931,7 @@ int ElfReader::hookInternally(void *addr, void *new_func, void **old_func)
     //修改为新的hook地址
     *(void **)addr = new_func;
 
-    LOGD("plt addr = %lx", addr);
+    // LOGD("plt addr = %lx", addr);
     ElfHooker::clear_cache(start, PAGE_SIZE);
     return 0;
 }

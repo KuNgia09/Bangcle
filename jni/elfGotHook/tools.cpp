@@ -72,7 +72,7 @@ void ElfHooker::clear_cache(void *addr, size_t len)
 {
     uint8_t *end = reinterpret_cast<uint8_t *>(addr) + len;
 
-    LOGD("clear cache %lx  , %lx", addr, end);
+    // LOGD("clear cache %lx  , %lx", addr, end);
 
     syscall(0xf0002, addr, end);
 }

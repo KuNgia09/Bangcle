@@ -60,7 +60,7 @@ char *g_PackageResourcePath;
 char *g_pkgName;
 int g_dex_size = 0;  // main.dex的真正大小
 int g_page_size = 0; // main.dex进行页面对齐后的大小
-char g_fake_dex_magic[256] = {0};
+char g_fake_dex_path[256] = {0};
 void *g_decrypt_base = NULL;
 void *g_ArtHandle = NULL;
 
@@ -864,19 +864,17 @@ void mem_loadDex(JNIEnv *env, jobject ctx, const char *dex_path)
             {
                 // 执行方案二
                 LOGD("[-]get c_dex_cookie failed! Try second plan");
-                goto label;
+                goto label:
             }
         }
         else
         {
             LOGD("[-]get art handle failed! Try second plan");
         label:
-            // get_path_frommaps(g_pkgName, (char *)g_fake_dex_path, (char *)".dex", (char *)".odex");
-            // pkgName
-            sprintf((char*)g_fake_dex_magic,"%s/mini.dex",PACKER_MAGIC);
-            LOGD("[+]g_faked_dex_magic:%s",(char*)g_fake_dex_magic);
-            // 加载fake_dex
-            mini_dex_obj = hook_load_dex_internally(env, (const char *)LIB_ART_PATH, (char *)inPath, outPath);
+            get_path_frommaps(g_pkgName, (char *)g_fake_dex_path, (char *)".dex", (char *)".odex");
+            LOGD("[+]faked_path:%s",(char*)g_fake_dex_path);
+            // memcpy((char *)g_fake_dex_path, (char *)buffer, strlen((char *)inPath));
+            mini_dex_obj = hook_load_dex_internally(env, (const char *)LIB_ART_PATH, (char *)g_fake_dex_path, outPath);
             
             make_dex_elements(env, classLoader, mini_dex_obj);
             LOGD("[+]using second plan load dex finished");
